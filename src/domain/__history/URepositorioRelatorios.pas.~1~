@@ -1,0 +1,24 @@
+unit URepositorioRelatorios;
+
+interface
+
+uses
+  System.SysUtils, FireDAC.Comp.Client;
+
+type
+  IRepositorioRelatorios = interface
+    ['{C8B7C22C-9CF9-4C4D-9CF1-86C8C2B7C7D2}']
+    // Filtros: TanqueId=0 ignora, BombaId=0 ignora, ValorMin/ValorMax<0 ignora
+    procedure PreencherAbastecimentosAgrupados(
+      Q: TFDQuery;
+      const DataIni, DataFim: TDate;
+      const TanqueId: Integer = 0;
+      const BombaId: Integer = 0;
+      const ValorMin: Currency = -1;
+      const ValorMax: Currency = -1
+    );
+  end;
+
+implementation
+
+end.

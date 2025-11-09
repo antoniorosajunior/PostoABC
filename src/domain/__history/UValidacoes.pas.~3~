@@ -1,0 +1,142 @@
+unit UValidacoes;
+
+interface
+
+uses
+  System.SysUtils, System.Math, UModels;
+
+// Tipo para função que retorna estoque atual do tanque (por BOMBA_ID)
+type
+  TGetEstoqueFunc = reference to function(const BOMBA_ID: Integer): Double;
+
+  EValidacao = class(Exception);
+
+  TValidadorAbastecimento = class
+  public
+    // Valida e ajusta (deriva) campos automaticamente.
+    // - A: objeto de domínio (modificado in-place)
+    // - GetEstoque: função opcional para retornar estoque disponível (por BOMBA_ID).
+    //   Se fornecida, será validado se a quantidade em A.Litros cabe no estoque.
+    // - ValorLitroPadrao: valor unitário a usar caso usuário informe apenas VALOR_BRUTO
+    //   e não informe VALOR_LITRO — passe 0 se não houver padrão.
+    class procedure ValidarEAjustar(var A: TAbastecimento;
+      const GetEstoque: TGetEstoqueFunc = nil;
+      const ValorLitroPadrao: Currency = 0);
+
+    // Validações separadas (opcionais)
+    class procedure ValidarBasico(const A: TAbastecimento);
+    class procedure AjustarValores(var A: TAbastecimento; const ValorLitroPadrao: Currency = 0);
+    class procedure ValidarEstoque(const A: TAbastecimento; const EstoqueDisponivel: Double);
+  end;
+
+implementation
+
+{ TValidadorAbastecimento }
+
+class procedure TValidadorAbastecimento.ValidarBasico(const A: TAbastecimento);
+begin
+  if A = nil then
+    raise EValidacao.Create('Abastecimento não informado.');
+
+  if A.BombaId <= 0 then
+    raise EValidacao.Create('Bomba inválida.');
+
+  // Pelo menos um entre Litros ou ValorBruto deve ser informado
+  if (A.Litros <= 0) and (A.ValorBruto <= 0) then
+    raise EValidacao.Create('Informe Litros e/ou Valor total.');
+
+  if A.Litros < 0 then
+    raise EValidacao.Create('Litros não pode ser negativo.');
+
+  if A.ValorBruto < 0 then
+    raise EValidacao.Create('Valor bruto não pode ser negativo.');
+end;
+
+class procedure TValidadorAbastecimento.AjustarValores(var A: TAbastecimento; const ValorLitroPadrao: Currency);
+var
+  vLitros: Double;
+  vValorLitro: Currency;
+  vValorBruto: Currency;
+begin
+  // copia locais
+  vLitros := A.Litros;
+  vValorLitro := A.ValorLitro;
+  vValorBruto := A.ValorBruto;
+
+  // Se só tiver VALOR_BRUTO e houver um VALOR_LITRO padrão, derivar litros
+  if (vValorBruto > 0) and (vValorLitro = 0) and (vLitros <= 0) and (ValorLitroPadrao > 0) then
+  begin
+    vValorLitro := ValorLitroPadrao;
+    vLitros := vValorBruto / vValorLitro;
+  end;
+
+  // Caso 1: tem preço e litros -> calcula valor bruto
+  if (vValorLitro > 0) and (vLitros > 0) then
+  begin
+    vValorBruto := vValorLitro * vLitros;
+    vValorBruto := RoundTo(vValorBruto, -2);      // dinheiro 2 casas
+    vValorLitro := RoundTo(vValorLitro, -4);      // preço 4 casas
+    vLitros := RoundTo(vLitros, -3);              // litros 3 casas
+  end
+  // Caso 2: tem valor bruto e preço -> calcula litros
+  else if (vValorBruto > 0) and (vValorLitro > 0) and (vLitros <= 0) then
+  begin
+    vLitros := vValorBruto / vValorLitro;
+    vLitros := RoundTo(vLitros, -3);
+    vValorBruto := RoundTo(vValorBruto, -2);
+    vValorLitro := RoundTo(vValorLitro, -4);
+  end
+  // Caso 3: tem valor bruto e litros -> calcula preço por litro
+  else if (vValorBruto > 0) and (vLitros > 0) and (vValorLitro = 0) then
+  begin
+    vValorLitro := vValorBruto / vLitros;
+    vValorLitro := RoundTo(vValorLitro, -4);
+    vValorBruto := RoundTo(vValorBruto, -2);
+    vLitros := RoundTo(vLitros, -3);
+  end;
+
+  // Escrever de volta
+  A.Litros := vLitros;
+  A.ValorLitro := vValorLitro;
+  A.ValorBruto := vValorBruto;
+end;
+
+class procedure TValidadorAbastecimento.ValidarEstoque(const A: TAbastecimento; const EstoqueDisponivel: Double);
+begin
+  // Se não informado litros, nada a validar
+  if A.Litros <= 0 then
+    Exit;
+
+  // Se estoque negativo ou insuficiente -> erro
+  if EstoqueDisponivel <= 0 then
+    raise EValidacao.Create('Estoque do tanque indisponível.');
+
+  if A.Litros > EstoqueDisponivel then
+    raise EValidacao.CreateFmt('Estoque insuficiente. Disponível: %0.3f L — Tentativa: %0.3f L',
+      [EstoqueDisponivel, A.Litros]);
+end;
+
+class procedure TValidadorAbastecimento.ValidarEAjustar(var A: TAbastecimento;
+  const GetEstoque: TGetEstoqueFunc; const ValorLitroPadrao: Currency);
+begin
+  // 1) validações básicas
+  ValidarBasico(A);
+
+  // 2) ajustar/derivar valores (usa ValorLitroPadrao se necessário)
+  AjustarValores(A, ValorLitroPadrao);
+
+  // 3) se fornecida função de estoque, validar disponibilidade
+  if Assigned(GetEstoque) then
+  begin
+    // a função recebe BOMBA_ID e deve retornar o estoque atual do tanque associado
+    try
+      ValidarEstoque(A, GetEstoque(A.BombaId));
+    except
+      on E: Exception do
+        raise; // propaga com mensagem clara
+    end;
+  end;
+end;
+
+end.
+

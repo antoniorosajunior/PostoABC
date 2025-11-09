@@ -1,0 +1,31 @@
+unit UFrmPrincipal;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Menus, ConexaoDM;
+
+type
+  TFrmPrincipal = class(TForm)
+    MainMenu1: TMainMenu;
+    MenuItemArquivo: TMenuItem;
+  public
+    procedure AfterConstruction; override;
+  end;
+
+var
+  FrmPrincipal: TFrmPrincipal;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFrmPrincipal.AfterConstruction;
+begin
+  inherited;
+  dmConexao := TdmConexao.Create(Self);
+  dmConexao.Configurar;
+  Caption := 'Posto ABC - Sistema de Abastecimento';
+end;
+
+end.

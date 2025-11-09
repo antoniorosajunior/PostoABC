@@ -1,0 +1,47 @@
+unit UFrmPrincipal;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Menus, ConexaoDM;
+
+type
+  TFrmPrincipal = class(TForm)
+    MainMenu1: TMainMenu;
+    MenuItemLancamento: TMenuItem;
+    MenuItemRelatorio: TMenuItem;
+    procedure MenuItemLancamentoClick(Sender: TObject);
+  public
+    procedure AfterConstruction; override;
+  end;
+
+var
+  FrmPrincipal: TFrmPrincipal;
+
+implementation
+
+{$R *.dfm}
+
+uses UFrmLancamento;
+
+procedure TFrmPrincipal.AfterConstruction;
+begin
+  inherited;
+  dmConexao := TdmConexao.Create(Self);
+  dmConexao.Configurar;
+  Caption := 'Posto ABC - Sistema de Abastecimento';
+end;
+
+procedure TFrmPrincipal.MenuItemLancamentoClick(Sender: TObject);
+begin
+  FrmLancamento:=TFrmLancamento.Create(Self);
+  try
+    FrmLancamento.ShowModal;
+  finally
+    FrmLancamento.Release;
+    FrmLancamento:=nil;
+  end;
+  Application.Terminate;
+end;
+
+end.

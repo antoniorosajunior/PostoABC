@@ -1,0 +1,37 @@
+unit ConexaoDM;
+
+interface
+
+uses
+  System.SysUtils, System.Classes,
+  FireDAC.Comp.Client, FireDAC.Phys.FB, FireDAC.UI.Intf, FireDAC.VCLUI.Wait;
+
+type
+  TdmConexao = class(TDataModule)
+    FDConnection: TFDConnection;
+    FBDriverLink: TFDPhysFBDriverLink;
+    FDGUIxWaitCursor: TFDGUIxWaitCursor;
+  public
+    procedure Configurar;
+  end;
+
+var
+  dmConexao: TdmConexao;
+
+implementation
+
+{$R *.dfm}
+
+procedure TdmConexao.Configurar;
+begin
+  FDConnection.Params.Clear;
+  FDConnection.Params.Values['DriverID'] := 'FB';
+  FDConnection.Params.Values['Database'] := 'D:\Sistemas\Fortes Tecnologia\postoabc.fdb';
+  FDConnection.Params.Values['User_Name'] := 'SYSDBA';
+  FDConnection.Params.Values['Password'] := 'masterkey';
+  FDConnection.Params.Values['CharacterSet'] := 'UTF8';
+  FDConnection.LoginPrompt := False;
+  FDConnection.Connected := True;
+end;
+
+end.

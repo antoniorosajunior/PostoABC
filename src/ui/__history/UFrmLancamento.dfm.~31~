@@ -1,0 +1,371 @@
+object FrmLancamento: TFrmLancamento
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  Caption = 'Lan'#231'amento'
+  ClientHeight = 344
+  ClientWidth = 566
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  KeyPreview = True
+  Position = poDesktopCenter
+  OnKeyPress = FormKeyPress
+  OnShow = FormShow
+  TextHeight = 17
+  object PanelHeader: TPanel
+    Left = 0
+    Top = 0
+    Width = 566
+    Height = 41
+    Align = alTop
+    Caption = 'Lan'#231'amento de Combust'#237'vel'
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -21
+    Font.Name = 'Segoe UI'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 0
+    ExplicitWidth = 602
+  end
+  object PanelDados: TPanel
+    Left = 0
+    Top = 41
+    Width = 566
+    Height = 262
+    Align = alClient
+    BevelOuter = bvNone
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 1
+    ExplicitWidth = 602
+    ExplicitHeight = 261
+    object Label1: TLabel
+      Left = 64
+      Top = 91
+      Width = 41
+      Height = 17
+      Caption = 'Bomba'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label2: TLabel
+      Left = 64
+      Top = 40
+      Width = 120
+      Height = 17
+      Caption = 'Data de Lan'#231'amento'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label3: TLabel
+      Left = 64
+      Top = 143
+      Width = 63
+      Height = 17
+      Caption = 'Lan'#231'ar por'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object lblQtdText: TLabel
+      Left = 231
+      Top = 143
+      Width = 83
+      Height = 17
+      Caption = 'Total de Litros'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object ComboBomba: TComboBox
+      Left = 64
+      Top = 113
+      Width = 217
+      Height = 25
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 1
+      Text = 'ComboBomba'
+      OnChange = ComboBombaChange
+    end
+    object edtDataLancamento: TDateTimePicker
+      Left = 64
+      Top = 61
+      Width = 137
+      Height = 25
+      Date = 45968.000000000000000000
+      Time = 0.861665567128511600
+      TabOrder = 0
+    end
+    object cbLancarPor: TComboBox
+      Left = 64
+      Top = 165
+      Width = 81
+      Height = 25
+      Style = csDropDownList
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ItemIndex = 0
+      ParentFont = False
+      TabOrder = 2
+      Text = 'VALOR'
+      OnChange = cbLancarPorChange
+      Items.Strings = (
+        'VALOR'
+        'LITRO')
+    end
+    object edtValorLitro1: TNumberBox
+      Left = 151
+      Top = 165
+      Width = 74
+      Height = 25
+      Alignment = taRightJustify
+      DisplayFormat = '0.00'
+      Mode = nbmFloat
+      TabOrder = 3
+      OnExit = edtValorLitro1Exit
+    end
+    object Panel1: TPanel
+      Left = 402
+      Top = 0
+      Width = 164
+      Height = 262
+      Align = alRight
+      BevelOuter = bvLowered
+      Enabled = False
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 5
+      ExplicitLeft = 418
+      object Label4: TLabel
+        Left = 9
+        Top = 40
+        Width = 128
+        Height = 17
+        Caption = 'Tipo de Combust'#237'vel'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label6: TLabel
+        Left = 9
+        Top = 91
+        Width = 144
+        Height = 17
+        Caption = 'Estoque Atual de Litros'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label7: TLabel
+        Left = 9
+        Top = 143
+        Width = 87
+        Height = 17
+        Caption = 'Pre'#231'o do Litro'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label8: TLabel
+        Left = 9
+        Top = 193
+        Width = 107
+        Height = 17
+        Caption = 'Valor do Imposto'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object EdtTipoCombustivel: TEdit
+        Left = 9
+        Top = 61
+        Width = 148
+        Height = 25
+        Color = clYellow
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+        TabOrder = 0
+        Text = 'GASOLINA'
+      end
+      object Panel2: TPanel
+        Left = 1
+        Top = 1
+        Width = 162
+        Height = 24
+        Align = alTop
+        Caption = 'Informa'#231#245'es'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+        TabOrder = 1
+        ExplicitWidth = 188
+      end
+      object edtPrecoLitro: TNumberBox
+        Left = 9
+        Top = 163
+        Width = 148
+        Height = 25
+        Alignment = taRightJustify
+        Color = clYellow
+        Decimal = 4
+        DisplayFormat = '0.0000'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        Mode = nbmFloat
+        ParentFont = False
+        ReadOnly = True
+        TabOrder = 2
+      end
+      object edtEstoque: TNumberBox
+        Left = 9
+        Top = 113
+        Width = 148
+        Height = 25
+        Alignment = taRightJustify
+        Color = clYellow
+        Decimal = 3
+        DisplayFormat = ',0.000'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        Mode = nbmFloat
+        ParentFont = False
+        ReadOnly = True
+        TabOrder = 3
+      end
+      object edtValorImposto: TNumberBox
+        Left = 9
+        Top = 215
+        Width = 148
+        Height = 25
+        Alignment = taRightJustify
+        Color = clYellow
+        DisplayFormat = '0.00'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        Mode = nbmFloat
+        ParentFont = False
+        ReadOnly = True
+        TabOrder = 4
+      end
+    end
+    object edtValorLitro2: TNumberBox
+      Left = 231
+      Top = 166
+      Width = 95
+      Height = 25
+      Alignment = taRightJustify
+      Color = clYellow
+      DisplayFormat = '0.00'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      Mode = nbmFloat
+      ParentFont = False
+      ReadOnly = True
+      TabOrder = 4
+    end
+  end
+  object PanelBotoes: TPanel
+    Left = 0
+    Top = 303
+    Width = 566
+    Height = 41
+    Align = alBottom
+    BevelOuter = bvLowered
+    TabOrder = 2
+    ExplicitTop = 302
+    ExplicitWidth = 602
+    object BtnGravar: TButton
+      Left = 152
+      Top = 6
+      Width = 75
+      Height = 25
+      Caption = '&Gravar'
+      TabOrder = 1
+      OnClick = BtnGravarClick
+    end
+    object BtnCancelar: TButton
+      Left = 233
+      Top = 6
+      Width = 75
+      Height = 25
+      Caption = '&Cancelar'
+      TabOrder = 0
+      OnClick = BtnCancelarClick
+    end
+    object BtnSair: TButton
+      Left = 314
+      Top = 6
+      Width = 75
+      Height = 25
+      Caption = '&Sair'
+      TabOrder = 2
+      OnClick = BtnSairClick
+    end
+  end
+end

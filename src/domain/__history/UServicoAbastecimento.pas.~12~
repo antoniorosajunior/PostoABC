@@ -1,0 +1,46 @@
+﻿unit UServicoAbastecimento;
+
+interface
+uses
+  System.SysUtils,
+  System.Math,
+  UModels,
+  URepositorio,
+  UValidacoes;
+type
+  EServicoAbastecimento = class(Exception);
+  TServicoAbastecimento = class
+  private
+    FRepo: TRepositorio;
+    function GetEstoqueFunc: TGetEstoqueFunc;
+  public
+    constructor Create(ARepo: TRepositorio);
+    procedure Registrar(A: TAbastecimento; const ValorLitroPadrao: Currency = 0);
+  end;
+implementation
+
+{ TServicoAbastecimento }
+constructor TServicoAbastecimento.Create(ARepo: TRepositorio);
+begin
+  FRepo := ARepo;
+end;
+
+function TServicoAbastecimento.GetEstoqueFunc: TGetEstoqueFunc;
+begin
+  Result := function(const BOMBA_ID: Integer): Double
+  begin
+    Result := FRepo.ObterEstoquePorBomba(BOMBA_ID);
+  end;
+end;
+
+procedure TServicoAbastecimento.Registrar(A: TAbastecimento; const ValorLitroPadrao: Currency);
+begin
+  TValidadorAbastecimento.ValidarEAjustar(A, GetEstoqueFunc());
+  try
+    FRepo.Inserir(A);
+  except
+    raise;
+  end;
+end;
+end.
+

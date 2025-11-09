@@ -1,0 +1,293 @@
+unit UFrmLancamento;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, System.Math,
+  System.ImageList, Vcl.ImgList, Vcl.Buttons, Vcl.ComCtrls, Vcl.NumberBox,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
+  FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  URepositorio, UModels, UServicoAbastecimento, UValidacoes;
+
+type
+  TFrmLancamento = class(TForm)
+    PanelHeader: TPanel;
+    PanelDados: TPanel;
+    PanelBotoes: TPanel;
+    BtnGravar: TButton;
+    BtnCancelar: TButton;
+    BtnSair: TButton;
+    Label1: TLabel;
+    ComboBomba: TComboBox;
+    Label2: TLabel;
+    edtDataLancamento: TDateTimePicker;
+    Label3: TLabel;
+    cbLancarPor: TComboBox;
+    edtValorLitro1: TNumberBox;
+    Panel1: TPanel;
+    Label4: TLabel;
+    EdtTipoCombustivel: TEdit;
+    Panel2: TPanel;
+    lblQtdText: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    edtValorLitro2: TNumberBox;
+    edtPrecoLitro: TNumberBox;
+    edtEstoque: TNumberBox;
+    edtValorImposto: TNumberBox;
+    procedure ComboBombaChange(Sender: TObject);
+    procedure cbLancarPorChange(Sender: TObject);
+    procedure BtnGravarClick(Sender: TObject);
+    procedure BtnCancelarClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure BtnSairClick(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure edtValorLitro1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure edtValorLitro1Exit(Sender: TObject);
+
+  private
+    FRepo: TRepositorio;
+    FServico: TServicoAbastecimento;
+    FSelectedBombaId: Integer;
+
+    procedure CarregarBombas;
+    procedure AtualizarInformaçõesDoTanqueParaBomba(const BOMBA_ID: Integer);
+    procedure CalculaLancaPor; // calcula e atualiza edtValorLitro2 e edtValorImposto
+  public
+    constructor Create(AOwner: TComponent; ARepo: TRepositorio); reintroduce;
+  end;
+
+var
+  FrmLancamento: TFrmLancamento;
+
+implementation
+
+{$R *.dfm}
+
+
+procedure TFrmLancamento.BtnCancelarClick(Sender: TObject);
+begin
+  edtDataLancamento.MaxDate := Date;
+  edtDataLancamento.DateTime := now;
+  edtValorLitro1.Value := 0;
+  edtValorLitro2.Value := 0;
+  edtValorImposto.Value := 0;
+  ComboBomba.SetFocus;
+end;
+
+procedure TFrmLancamento.BtnGravarClick(Sender: TObject);
+var
+  A: TAbastecimento;
+begin
+  BtnGravar.Enabled := False;
+  try
+    A := TAbastecimento.Create;
+    try
+      A.BombaId := FSelectedBombaId;
+      A.DataHora := edtDataLancamento.DateTime;
+      if cbLancarPor.Text = 'VALOR' then
+      begin
+        A.ValorBruto := edtValorLitro1.Value;
+        A.ValorLitro := edtPrecoLitro.value;
+        A.QuantidadeLitros := edtValorLitro2.Value;
+      end
+      else
+      begin
+        A.QuantidadeLitros := edtValorLitro1.Value;
+        A.ValorLitro := edtPrecoLitro.value;
+        A.ValorBruto := edtValorLitro2.Value;
+      end;
+
+      try
+        FServico.Registrar(A);
+      except
+        on E: Exception do
+        begin
+          raise Exception.Create('Erro ao gravar: ' + E.Message);
+        end;
+      end;
+    finally
+      A.Free;
+    end;
+    BtnCancelar.Click;
+
+    AtualizarInformaçõesDoTanqueParaBomba(FSelectedBombaId);
+    CalculaLancaPor;
+
+  finally
+    BtnGravar.Enabled := True;
+  end;
+end;
+
+procedure TFrmLancamento.BtnSairClick(Sender: TObject);
+begin
+  close;
+end;
+
+procedure TFrmLancamento.ComboBombaChange(Sender: TObject);
+var
+  idx: Integer;
+  bombaId: Integer;
+begin
+  idx := ComboBomba.ItemIndex;
+  if idx < 0 then
+    Exit;
+  bombaId := Integer(ComboBomba.Items.Objects[idx]);
+  FSelectedBombaId := bombaId;
+  AtualizarInformaçõesDoTanqueParaBomba(bombaId);
+
+  CalculaLancaPor;
+end;
+
+constructor TFrmLancamento.Create(AOwner: TComponent; ARepo: TRepositorio);
+begin
+  inherited Create(AOwner);
+  FRepo := ARepo;
+  FServico := TServicoAbastecimento.Create(FRepo);
+end;
+
+procedure TFrmLancamento.edtValorLitro1Exit(Sender: TObject);
+begin
+  CalculaLancaPor;
+end;
+
+procedure TFrmLancamento.edtValorLitro1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    Key := 0;
+    BtnGravar.SetFocus;
+  end;
+end;
+
+procedure TFrmLancamento.CalculaLancaPor;
+var
+  vValorLitro: Double;
+  vPrecoLitro: Currency;
+  vQtdLitros: Double;
+  vValorBruto: Currency;
+  taxa: Double;
+  vImposto: Currency;
+begin
+  vValorLitro := edtValorLitro1.Value;
+  vPrecoLitro := edtPrecoLitro.Value;
+
+  if cbLancarPor.Text = 'VALOR' then
+  begin
+    // calcular LITROS = VALOR / PRECO_LITRO
+    vValorBruto := vValorLitro;
+    if (vPrecoLitro > 0) then
+      vQtdLitros := vValorBruto / vPrecoLitro
+    else
+      vQtdLitros := 0;
+    vQtdLitros := RoundTo(vQtdLitros, -3);
+    edtValorLitro2.Value := vQtdLitros;
+  end
+  else
+  begin
+    // calcular VALOR = LITROS * PRECO_LITRO
+    vQtdLitros := vValorLitro;
+    vValorBruto := vQtdLitros * vPrecoLitro;
+    vValorBruto := RoundTo(vValorBruto, -2);
+    edtValorLitro2.Value := vValorBruto;
+  end;
+  taxa := FRepo.ObterTaxaImposto;
+  vImposto := RoundTo(vValorBruto * taxa, -2);
+  edtValorImposto.Value := vImposto;
+end;
+
+
+procedure TFrmLancamento.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+  begin
+    Key := #0;
+    Perform(WM_NEXTDLGCTL, 0, 0);
+  end;
+end;
+
+procedure TFrmLancamento.FormShow(Sender: TObject);
+begin
+  if Assigned(FRepo) then
+    CarregarBombas;
+
+  BtnCancelarClick(Sender);
+end;
+
+procedure TFrmLancamento.CarregarBombas;
+var
+  Q: TFDQuery;
+  i: Integer;
+  sDisplay: string;
+begin
+  ComboBomba.Items.BeginUpdate;
+  try
+    ComboBomba.Items.Clear;
+    Q := TFDQuery.Create(nil);
+    try
+      Q.Connection := FRepo.GetConnection;
+      Q.SQL.Text := 'SELECT BOMBA_ID, CODIGO, DESCRICAO FROM BOMBA ORDER BY CODIGO';
+      Q.Open;
+      while not Q.Eof do
+      begin
+        sDisplay := Q.FieldByName('CODIGO').AsString;
+        if Trim(Q.FieldByName('DESCRICAO').AsString) <> '' then
+          sDisplay := sDisplay + ' - ' + Q.FieldByName('DESCRICAO').AsString;
+        ComboBomba.Items.AddObject(sDisplay, TObject(Q.FieldByName('BOMBA_ID').AsInteger));
+        Q.Next;
+      end;
+    finally
+      Q.Free;
+    end;
+    if ComboBomba.Items.Count > 0 then
+    begin
+      ComboBomba.ItemIndex := 0;
+      ComboBombaChange(nil);
+    end;
+  finally
+    ComboBomba.Items.EndUpdate;
+  end;
+end;
+
+procedure TFrmLancamento.cbLancarPorChange(Sender: TObject);
+begin
+  if cbLancarPor.Text = 'VALOR' then
+  begin
+    lblQtdText.Caption := 'Total de Litros';
+    edtValorLitro1.Decimal := 2;
+    edtValorLitro1.DisplayFormat:='0.00';
+    edtValorLitro1.Value := 0;
+  end
+  else
+  begin
+    lblQtdText.Caption := 'Valor Total';
+    edtValorLitro1.Decimal := 3;
+    edtValorLitro1.DisplayFormat:='0.000';
+    edtValorLitro1.Value := 0;
+  end;
+  lblQtdText.Refresh;
+  edtValorLitro1.Refresh;
+
+  CalculaLancaPor;
+end;
+
+procedure TFrmLancamento.AtualizarInformaçõesDoTanqueParaBomba(const BOMBA_ID: Integer);
+var T: TTanque;
+begin
+  T := TTanque.Create;
+  try
+    FRepo.ObterInformacoesPorTanque(BOMBA_ID, T);
+    EdtTipoCombustivel.Text := T.Tipo;
+    edtPrecoLitro.Value     := T.ValorLitro;
+    edtEstoque.Value        := T.EstoqueAtualL;
+  finally
+    T.Free;
+  end;
+end;
+
+end.

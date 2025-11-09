@@ -1,0 +1,265 @@
+object FrmRelatorio: TFrmRelatorio
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  Caption = 'Relat'#243'rio'
+  ClientHeight = 330
+  ClientWidth = 434
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  KeyPreview = True
+  Position = poDesktopCenter
+  OnKeyDown = FormKeyDown
+  OnShow = FormShow
+  TextHeight = 17
+  object PanelHeader: TPanel
+    Left = 0
+    Top = 0
+    Width = 434
+    Height = 41
+    Align = alTop
+    Caption = 'Relat'#243'rio dos Lan'#231'amentos'
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -21
+    Font.Name = 'Segoe UI'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 0
+    ExplicitWidth = 602
+  end
+  object PanelDados: TPanel
+    Left = 0
+    Top = 41
+    Width = 434
+    Height = 248
+    Align = alClient
+    BevelOuter = bvNone
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 1
+    ExplicitWidth = 602
+    ExplicitHeight = 261
+    object Label1: TLabel
+      Left = 64
+      Top = 125
+      Width = 41
+      Height = 17
+      Caption = 'Bomba'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label2: TLabel
+      Left = 64
+      Top = 22
+      Width = 139
+      Height = 17
+      Caption = 'Per'#237'odo de Lan'#231'amento'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label3: TLabel
+      Left = 64
+      Top = 177
+      Width = 30
+      Height = 17
+      Caption = 'Valor'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label4: TLabel
+      Left = 207
+      Top = 45
+      Width = 7
+      Height = 17
+      Caption = #224
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label5: TLabel
+      Left = 147
+      Top = 203
+      Width = 7
+      Height = 17
+      Caption = #224
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label6: TLabel
+      Left = 64
+      Top = 74
+      Width = 42
+      Height = 17
+      Caption = 'Tanque'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object ComboBomba: TComboBox
+      Left = 64
+      Top = 147
+      Width = 217
+      Height = 25
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 2
+      Text = 'ComboBomba'
+      OnChange = ComboBombaChange
+    end
+    object edtData1: TDateTimePicker
+      Left = 64
+      Top = 43
+      Width = 137
+      Height = 25
+      Date = 45968.000000000000000000
+      Time = 0.861665567128511600
+      TabOrder = 0
+    end
+    object edtValor1: TNumberBox
+      Left = 64
+      Top = 200
+      Width = 74
+      Height = 25
+      Alignment = taRightJustify
+      DisplayFormat = '0.00'
+      Mode = nbmFloat
+      TabOrder = 3
+    end
+    object edtData2: TDateTimePicker
+      Left = 220
+      Top = 43
+      Width = 137
+      Height = 25
+      Date = 45968.000000000000000000
+      Time = 0.861665567128511600
+      TabOrder = 1
+    end
+    object edtValor2: TNumberBox
+      Left = 160
+      Top = 200
+      Width = 74
+      Height = 25
+      Alignment = taRightJustify
+      DisplayFormat = '0.00'
+      Mode = nbmFloat
+      TabOrder = 4
+    end
+    object ComboTanque: TComboBox
+      Left = 64
+      Top = 96
+      Width = 217
+      Height = 25
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 5
+      Text = 'ComboBomba'
+      OnChange = ComboTanqueChange
+    end
+  end
+  object PanelBotoes: TPanel
+    Left = 0
+    Top = 289
+    Width = 434
+    Height = 41
+    Align = alBottom
+    BevelOuter = bvLowered
+    TabOrder = 2
+    ExplicitTop = 302
+    ExplicitWidth = 602
+    object BtnGravar: TButton
+      Left = 99
+      Top = 6
+      Width = 75
+      Height = 25
+      Caption = '&Gerar'
+      TabOrder = 1
+      OnClick = BtnGravarClick
+    end
+    object BtnCancelar: TButton
+      Left = 180
+      Top = 6
+      Width = 75
+      Height = 25
+      Caption = '&Cancelar'
+      TabOrder = 0
+      OnClick = BtnCancelarClick
+    end
+    object BtnSair: TButton
+      Left = 261
+      Top = 6
+      Width = 75
+      Height = 25
+      Caption = '&Sair'
+      TabOrder = 2
+      OnClick = BtnSairClick
+    end
+  end
+  object DsRel: TDataSource
+    DataSet = FDQueryRel
+    Left = 376
+    Top = 145
+  end
+  object FDQueryRel: TFDQuery
+    DetailFields = 
+      'DIA;TANQUE;BOMBA;VALOR_MEDIO_LITRO;TOTAL_LITROS;TOTAL_BRUTO;TOTA' +
+      'L_IMPOSTO;TOTAL_LIQUIDO'
+    Connection = dmConexao.FDConnection
+    SQL.Strings = (
+      'SELECT'
+      '  CAST(A.DATA_HORA AS DATE) AS DIA,'
+      '  T.NOME AS TANQUE,'
+      '  B.CODIGO AS BOMBA,'
+      '  AVG(A.VALOR_LITRO) AS VALOR_MEDIO_LITRO,'
+      '  SUM(A.QUANTIDADE_LITROS) AS TOTAL_LITROS,'
+      '  SUM(A.VALOR_BRUTO) AS TOTAL_BRUTO,'
+      '  SUM(A.VALOR_IMPOSTO) AS TOTAL_IMPOSTO,'
+      '  SUM(A.VALOR_BRUTO - A.VALOR_IMPOSTO) AS TOTAL_LIQUIDO'
+      'FROM ABASTECIMENTO A'
+      'JOIN BOMBA  B ON B.BOMBA_ID = A.BOMBA_ID'
+      'JOIN TANQUE T ON T.TANQUE_ID = B.TANQUE_ID'
+      'WHERE 0=1'
+      'GROUP BY 1,2,3'
+      'ORDER BY 1,2,3')
+    Left = 320
+    Top = 145
+  end
+end

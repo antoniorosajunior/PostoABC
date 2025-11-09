@@ -1,0 +1,60 @@
+unit UFrmPrincipal;
+interface
+uses
+  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Menus, ConexaoDM, URepositorio;
+type
+  TFrmPrincipal = class(TForm)
+    MainMenu1: TMainMenu;
+    MenuItemLancamento: TMenuItem;
+    MenuItemRelatorio: TMenuItem;
+    Sair1: TMenuItem;
+    procedure MenuItemLancamentoClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure Sair1Click(Sender: TObject);
+  private
+    FRepo: TRepositorio;
+  public
+    procedure AfterConstruction; override;
+  end;
+var
+  FrmPrincipal: TFrmPrincipal;
+implementation
+{$R *.dfm}
+
+uses UFrmLancamento;
+procedure TFrmPrincipal.AfterConstruction;
+begin
+  inherited;
+  dmConexao := TdmConexao.Create(Self);
+  dmConexao.Configurar;
+  Caption := 'Posto ABC - Sistema de Abastecimento';
+end;
+procedure TFrmPrincipal.FormCreate(Sender: TObject);
+begin
+  inherited;
+  FRepo := TRepositorio.Create(dmConexao.GetConnection);
+end;
+
+procedure TFrmPrincipal.FormDestroy(Sender: TObject);
+begin
+  FRepo.Free;
+end;
+
+procedure TFrmPrincipal.MenuItemLancamentoClick(Sender: TObject);
+begin
+  FrmLancamento:=TFrmLancamento.Create(Self,FRepo);
+  try
+    FrmLancamento.ShowModal;
+  finally
+    FrmLancamento.Free;
+    FrmLancamento:=nil;
+  end;
+end;
+
+procedure TFrmPrincipal.Sair1Click(Sender: TObject);
+begin
+  Application.Terminate;
+end;
+
+end.

@@ -1,0 +1,11 @@
+object dmConexao: TdmConexao
+  Height = 240
+  Width = 320
+  object FDConnection: TFDConnection
+  end
+  object FBDriverLink: TFDPhysFBDriverLink
+  end
+  object FDGUIxWaitCursor: TFDGUIxWaitCursor
+    Provider = 'Forms'
+  end
+end

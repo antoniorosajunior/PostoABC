@@ -1,0 +1,61 @@
+﻿unit UServicoAbastecimento;
+
+interface
+
+uses
+  System.SysUtils,
+  System.Math,
+  UModels,
+  URepositorio,
+  UValidacoes;
+
+type
+  EServicoAbastecimento = class(Exception);
+
+  TServicoAbastecimento = class
+  private
+    FRepo: TRepositorio;
+    function GetEstoqueFunc: TGetEstoqueFunc;
+  public
+    constructor Create(ARepo: TRepositorio);
+    procedure Registrar(A: TAbastecimento; const ValorLitroPadrao: Currency = 0);
+  end;
+
+implementation
+
+{ TServicoAbastecimento }
+
+constructor TServicoAbastecimento.Create(ARepo: TRepositorio);
+begin
+  if ARepo = nil then
+    raise EServicoAbastecimento.Create('Repositorio nao informado.');
+  FRepo := ARepo;
+end;
+
+function TServicoAbastecimento.GetEstoqueFunc: TGetEstoqueFunc;
+begin
+  // retorna um anonymous function que usa o repositório para obter estoque por bomba
+  Result := function(const BOMBA_ID: Integer): Double
+  begin
+    Result := FRepo.ObterEstoquePorBomba(BOMBA_ID);
+  end;
+end;
+
+procedure TServicoAbastecimento.Registrar(A: TAbastecimento; const ValorLitroPadrao: Currency);
+begin
+  // 1) Valida e ajusta (deriva litros/valor/valor_litro) e valida estoque via repositório
+  TValidadorAbastecimento.ValidarEAjustar(A, GetEstoqueFunc(), ValorLitroPadrao);
+
+  // 2) Deixa ValorImposto zerado (trigger do DB calculará)
+  A.ValorImposto := 0;
+
+  // 3) Grava via repositório (Inserir faz transação + baixa estoque)
+  try
+    FRepo.Inserir(A);
+  except
+    raise; // propaga exceção (DB error ou validação)
+  end;
+end;
+
+end.
+

@@ -1,0 +1,221 @@
+unit URepositorio;
+
+interface
+uses
+  System.SysUtils,
+  FireDAC.Comp.Client, FireDAC.Stan.Param,
+  UModels;
+type
+  TRepositorio = class
+  private
+    FConn: TFDConnection;
+  public
+    constructor Create(AConn: TFDConnection);
+    function GetConnection: TFDConnection;
+    function ObterTaxaImposto: Double;
+    procedure ObterInformacoesPorTanque(const BOMBA_ID: Integer; T: TTanque);
+    function ObterEstoquePorBomba(const BOMBA_ID: Integer): Double;
+    procedure Inserir(const A: TAbastecimento);
+    procedure RelatorioAbastecimentos(
+      Q: TFDQuery;
+      const DATA_INI, DATA_FIM: TDate;
+      const TANQUE_ID: Integer = 0;
+      const BOMBA_ID: Integer = 0;
+      const VALOR_MIN: Currency = -1;
+      const VALOR_MAX: Currency = -1
+    );
+  end;
+implementation
+
+{ TRepositorio }
+constructor TRepositorio.Create(AConn: TFDConnection);
+begin
+  inherited Create;
+  FConn := AConn;
+end;
+
+// ===================== CONFIGURAÇÃO =====================
+function TRepositorio.ObterTaxaImposto: Double;
+var
+  Q: TFDQuery;
+begin
+  Result := 0.13;
+  Q := TFDQuery.Create(nil);
+  try
+    Q.Connection := FConn;
+    Q.SQL.Text := 'SELECT VALOR FROM CONFIGURACAO WHERE CHAVE = :CHAVE';
+    Q.ParamByName('CHAVE').AsString := 'IMPOSTO_ABASTECIMENTO';
+    Q.Open;
+    if not Q.IsEmpty then
+      Result := Q.Fields[0].AsFloat;
+  finally
+    Q.Free;
+  end;
+end;
+
+// ======================= TANQUES =======================
+procedure TRepositorio.ObterInformacoesPorTanque(const BOMBA_ID: Integer; T: TTanque);
+var
+  Q: TFDQuery;
+begin
+  Q := TFDQuery.Create(nil);
+  try
+    Q.Connection := FConn;
+    Q.SQL.Text :=
+      'SELECT T.TIPO_COMBUSTIVEL, T.VALOR_LITRO, T.ESTOQUE_ATUAL_L ' +
+      'FROM BOMBA B ' +
+      'JOIN TANQUE T ON T.TANQUE_ID = B.TANQUE_ID ' +
+      'WHERE B.BOMBA_ID = :BOMBA_ID';
+    Q.ParamByName('BOMBA_ID').AsInteger := BOMBA_ID;
+    Q.Open;
+    if not Q.IsEmpty then
+    begin
+      t.Tipo := Q.FieldByName('TIPO_COMBUSTIVEL').AsString;
+      t.ValorLitro := Q.FieldByName('VALOR_LITRO').AsCurrency;
+      t.EstoqueAtualL := Q.FieldByName('ESTOQUE_ATUAL_L').AsCurrency;
+    end
+    else
+    begin
+      T.Tipo := '';
+      T.ValorLitro := 0;
+      T.EstoqueAtualL := 0;
+    end;
+  finally
+    Q.Free;
+  end;
+end;
+
+// ======================= BOMBA =======================
+function TRepositorio.ObterEstoquePorBomba(const BOMBA_ID: Integer): Double;
+var
+  Q: TFDQuery;
+begin
+  Result := 0;
+  Q := TFDQuery.Create(nil);
+  try
+    Q.Connection := FConn;
+    Q.SQL.Text :=
+      'SELECT T.ESTOQUE_ATUAL_L ' +
+      'FROM BOMBA B JOIN TANQUE T ON T.TANQUE_ID = B.TANQUE_ID ' +
+      'WHERE B.BOMBA_ID = :BOMBA_ID';
+    Q.ParamByName('BOMBA_ID').AsInteger := BOMBA_ID;
+    Q.Open;
+    if not Q.IsEmpty then
+      Result := Q.FieldByName('ESTOQUE_ATUAL_L').AsFloat;
+  finally
+    Q.Free;
+  end;
+end;
+
+// ==================== ABASTECIMENTOS ====================
+function TRepositorio.GetConnection: TFDConnection;
+begin
+  Result := FConn;
+end;
+
+procedure TRepositorio.Inserir(const A: TAbastecimento);
+var
+  Q: TFDQuery;
+  TANQUE_ID: Integer;
+begin
+  Q := TFDQuery.Create(nil);
+  try
+    Q.Connection := FConn;
+    FConn.StartTransaction;
+    try
+      // 1) Inserir abastecimento
+      Q.SQL.Text :=
+        'INSERT INTO ABASTECIMENTO (BOMBA_ID, DATA_HORA, QUANTIDADE_LITROS, VALOR_LITRO, VALOR_BRUTO, VALOR_IMPOSTO) ' +
+        'VALUES (:BOMBA_ID, :DATA_HORA, :QUANTIDADE_LITROS, :VALOR_LITRO, :VALOR_BRUTO, :VALOR_IMPOSTO)';
+      Q.ParamByName('BOMBA_ID').AsInteger := A.BombaId;
+      Q.ParamByName('DATA_HORA').AsDateTime := A.DataHora;
+      Q.ParamByName('QUANTIDADE_LITROS').AsFloat := A.QUANTIDADELitros;
+      Q.ParamByName('VALOR_LITRO').AsCurrency := A.ValorLitro;
+      Q.ParamByName('VALOR_BRUTO').AsCurrency := A.ValorBruto;
+      Q.ParamByName('VALOR_IMPOSTO').AsCurrency := 0; // trigger calcula
+      Q.ExecSQL;
+
+      // 2) Descobrir o TANQUE_ID
+      Q.SQL.Text := 'SELECT TANQUE_ID FROM BOMBA WHERE BOMBA_ID = :BOMBA_ID';
+      Q.ParamByName('BOMBA_ID').AsInteger := A.BombaId;
+      Q.Open;
+      if Q.IsEmpty then
+        raise Exception.Create('Bomba não encontrada.');
+      TANQUE_ID := Q.FieldByName('TANQUE_ID').AsInteger;
+      Q.Close;
+
+      // 3) Atualizar estoque
+      Q.SQL.Text :=
+        'UPDATE TANQUE SET ESTOQUE_ATUAL_L = ESTOQUE_ATUAL_L - :ESTOQUE_ATUAL_L ' +
+        'WHERE TANQUE_ID = :TANQUE_ID';
+      Q.ParamByName('ESTOQUE_ATUAL_L').AsFloat := A.QuantidadeLitros;
+      Q.ParamByName('TANQUE_ID').AsInteger := TANQUE_ID;
+      Q.ExecSQL;
+      FConn.Commit;
+    except
+      FConn.Rollback;
+      raise;
+    end;
+  finally
+    Q.Free;
+  end;
+end;
+
+// ===================== RELATÓRIO =====================
+procedure TRepositorio.RelatorioAbastecimentos(
+  Q: TFDQuery;
+  const DATA_INI, DATA_FIM: TDate;
+  const TANQUE_ID, BOMBA_ID: Integer;
+  const VALOR_MIN, VALOR_MAX: Currency);
+begin
+  Q.Close;
+  Q.Connection := FConn;
+  Q.SQL.Clear;
+  Q.SQL.Add('SELECT');
+  Q.SQL.Add('  CAST(A.DATA_HORA AS DATE) AS DIA,');
+  Q.SQL.Add('  T.NOME AS TANQUE,');
+  Q.SQL.Add('   B.CODIGO||'' - ''||B.DESCRICAO AS BOMBA,');
+  Q.SQL.Add('  AVG(A.VALOR_LITRO) AS VALOR_MEDIO_LITRO,');
+  Q.SQL.Add('  SUM(A.QUANTIDADE_LITROS) AS TOTAL_LITROS,');
+  Q.SQL.Add('  SUM(A.VALOR_BRUTO) AS TOTAL_BRUTO,');
+  Q.SQL.Add('  SUM(A.VALOR_IMPOSTO) AS TOTAL_IMPOSTO,');
+  Q.SQL.Add('  SUM(A.VALOR_BRUTO - A.VALOR_IMPOSTO) AS TOTAL_LIQUIDO');
+  Q.SQL.Add('FROM ABASTECIMENTO A');
+  Q.SQL.Add('JOIN BOMBA  B ON B.BOMBA_ID = A.BOMBA_ID');
+  Q.SQL.Add('JOIN TANQUE T ON T.TANQUE_ID = B.TANQUE_ID');
+  Q.SQL.Add('WHERE CAST(A.DATA_HORA AS DATE) BETWEEN :DATA_INI AND :DATA_FIM');
+  Q.ParamByName('DATA_INI').AsDate := DATA_INI;
+  Q.ParamByName('DATA_FIM').AsDate := DATA_FIM;
+  if TANQUE_ID > 0 then
+  begin
+    Q.SQL.Add('  AND T.TANQUE_ID = :TANQUE_ID');
+    Q.ParamByName('TANQUE_ID').AsInteger := TANQUE_ID;
+  end;
+  if BOMBA_ID > 0 then
+  begin
+    Q.SQL.Add('  AND B.BOMBA_ID = :BOMBA_ID');
+    Q.ParamByName('BOMBA_ID').AsInteger := BOMBA_ID;
+  end;
+  if (VALOR_MIN >= 0) and (VALOR_MAX >= 0) then
+  begin
+    Q.SQL.Add('  AND A.VALOR_BRUTO BETWEEN :VALOR_MIN AND :VALOR_MAX');
+    Q.ParamByName('VALOR_MIN').AsCurrency := VALOR_MIN;
+    Q.ParamByName('VALOR_MAX').AsCurrency := VALOR_MAX;
+  end
+  else if (VALOR_MIN >= 0) then
+  begin
+    Q.SQL.Add('  AND A.VALOR_BRUTO = :VALOR_MIN');
+    Q.ParamByName('VALOR_MIN').AsCurrency := VALOR_MIN;
+  end
+  else if (VALOR_MAX >= 0) then
+  begin
+    Q.SQL.Add('  AND A.VALOR_BRUTO = :VALOR_MAX');
+    Q.ParamByName('VALOR_MAX').AsCurrency := VALOR_MAX;
+  end;
+  Q.SQL.Add('GROUP BY 1,2,3');
+  Q.SQL.Add('ORDER BY 1,2,3');
+  Q.Open;
+end;
+
+end.
+

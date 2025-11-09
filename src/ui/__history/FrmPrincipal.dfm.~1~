@@ -1,0 +1,14 @@
+object FrmPrincipal: TFrmPrincipal
+  Caption = 'Posto ABC - Sistema de Abastecimento'
+  ClientHeight = 400
+  ClientWidth = 600
+  OldCreateOrder = False
+  Menu = MainMenu1
+  object MainMenu1: TMainMenu
+    Left = 8
+    Top = 8
+    object MenuItemArquivo: TMenuItem
+      Caption = 'Arquivo'
+    end
+  end
+end

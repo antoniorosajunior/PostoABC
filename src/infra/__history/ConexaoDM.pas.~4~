@@ -1,0 +1,56 @@
+unit ConexaoDM;
+interface
+
+uses
+  System.SysUtils, System.Classes, System.IniFiles,
+  FireDAC.Comp.Client, FireDAC.Phys.FB, FireDAC.UI.Intf, FireDAC.VCLUI.Wait,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.Phys.Intf,
+  FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys,
+  FireDAC.Phys.FBDef, FireDAC.Comp.UI, FireDAC.Phys.IBBase, Data.DB;
+
+type
+  TdmConexao = class(TDataModule)
+    FDConnection: TFDConnection;
+    FBDriverLink: TFDPhysFBDriverLink;
+    FDGUIxWaitCursor: TFDGUIxWaitCursor;
+  public
+    procedure Configurar;
+    function GetConnection: TFDConnection;
+  end;
+
+var
+  dmConexao: TdmConexao;
+
+implementation
+
+{$R *.dfm}
+
+procedure TdmConexao.Configurar;
+var
+  Ini: TIniFile;
+  CaminhoIni: string;
+begin
+  CaminhoIni := ExtractFilePath(ParamStr(0)) + 'Config.ini';
+  Ini := TIniFile.Create(CaminhoIni);
+  try
+    FDConnection.Close;
+    FDConnection.Params.Clear;
+    FDConnection.Params.Values['DriverID']    := Ini.ReadString('Database', 'DriverID', 'FB');
+    FDConnection.Params.Values['Server']      := Ini.ReadString('Database', 'Server', 'localhost');
+    FDConnection.Params.Values['Database']    := Ini.ReadString('Database', 'Database', '');
+    FDConnection.Params.Values['User_Name']   := Ini.ReadString('Database', 'User_Name', 'SYSDBA');
+    FDConnection.Params.Values['Password']    := Ini.ReadString('Database', 'Password', 'masterkey');
+    FDConnection.Params.Values['CharacterSet']:= Ini.ReadString('Database', 'CharacterSet', 'UTF8');
+    FDConnection.LoginPrompt := False;
+    FDConnection.Connected := True;
+  finally
+    Ini.Free;
+  end;
+end;
+
+function TdmConexao.GetConnection: TFDConnection;
+begin
+  Result := FDConnection;
+end;
+
+end.

@@ -1,0 +1,91 @@
+unit URepositorioRelatorios;
+
+interface
+
+uses
+  System.SysUtils, FireDAC.Comp.Client, FireDAC.Stan.Param;
+
+type
+  TRepositorioRelatorios = class
+  private
+    FConn: TFDConnection;
+  public
+    constructor Create(AConn: TFDConnection);
+    procedure PreencherAbastecimentosAgrupados(
+      Q: TFDQuery;
+      const DataIni, DataFim: TDate;
+      const TanqueId: Integer = 0;
+      const BombaId: Integer = 0;
+      const ValorMin: Currency = -1;
+      const ValorMax: Currency = -1
+    );
+  end;
+
+implementation
+
+constructor TRepositorioRelatorios.Create(AConn: TFDConnection);
+begin
+  inherited Create;
+  FConn := AConn;
+end;
+
+procedure TRepositorioRelatorios.PreencherAbastecimentosAgrupados(
+  Q: TFDQuery; const DataIni, DataFim: TDate;
+  const TanqueId, BombaId: Integer; const ValorMin, ValorMax: Currency);
+var
+  SQL: TStringBuilder;
+begin
+  Q.Close;
+  Q.Connection := FConn;
+
+  SQL := TStringBuilder.Create;
+  try
+    SQL.AppendLine('SELECT');
+    SQL.AppendLine('  CAST(A.DATA_HORA AS DATE) AS DIA,');
+    SQL.AppendLine('  T.NOME AS TANQUE,');
+    SQL.AppendLine('  B.CODIGO AS BOMBA,');
+    SQL.AppendLine('  SUM(A.LITROS)        AS TOTAL_LITROS,');
+    SQL.AppendLine('  SUM(A.VALOR_BRUTO)   AS TOTAL_VALOR,');
+    SQL.AppendLine('  SUM(A.VALOR_IMPOSTO) AS TOTAL_IMPOSTO');
+    SQL.AppendLine('FROM ABASTECIMENTO A');
+    SQL.AppendLine('JOIN BOMBA  B ON B.BOMBA_ID  = A.BOMBA_ID');
+    SQL.AppendLine('JOIN TANQUE T ON T.TANQUE_ID = B.TANQUE_ID');
+    SQL.AppendLine('WHERE CAST(A.DATA_HORA AS DATE) BETWEEN :P_DATA_INI AND :P_DATA_FIM');
+
+    if TanqueId > 0 then
+      SQL.AppendLine('  AND T.TANQUE_ID = :P_TANQUE_ID');
+
+    if BombaId > 0 then
+      SQL.AppendLine('  AND B.BOMBA_ID = :P_BOMBA_ID');
+
+    if (ValorMin >= 0) and (ValorMax >= 0) then
+      SQL.AppendLine('  AND A.VALOR_BRUTO BETWEEN :P_VALOR_MIN AND :P_VALOR_MAX')
+    else if (ValorMin >= 0) then
+      SQL.AppendLine('  AND A.VALOR_BRUTO >= :P_VALOR_MIN')
+    else if (ValorMax >= 0) then
+      SQL.AppendLine('  AND A.VALOR_BRUTO <= :P_VALOR_MAX');
+
+    SQL.AppendLine('GROUP BY 1,2,3');
+    SQL.AppendLine('ORDER BY 1,2,3');
+
+    Q.SQL.Text := SQL.ToString;
+  finally
+    SQL.Free;
+  end;
+
+  Q.ParamByName('P_DATA_INI').AsDate := DataIni;
+  Q.ParamByName('P_DATA_FIM').AsDate := DataFim;
+
+  if TanqueId > 0 then
+    Q.ParamByName('P_TANQUE_ID').AsInteger := TanqueId;
+  if BombaId > 0 then
+    Q.ParamByName('P_BOMBA_ID').AsInteger := BombaId;
+  if (ValorMin >= 0) then
+    Q.ParamByName('P_VALOR_MIN').AsCurrency := ValorMin;
+  if (ValorMax >= 0) then
+    Q.ParamByName('P_VALOR_MAX').AsCurrency := ValorMax;
+
+  Q.Open;
+end;
+
+end.

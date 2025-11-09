@@ -1,0 +1,50 @@
+﻿unit UServicoAbastecimento;
+
+interface
+
+uses
+  System.SysUtils, System.Math, UModels, URepositorio, UValidacoes;
+
+type
+  TServicoAbastecimento = class
+  private
+    FRepo: IRepositorioAbastecimento;
+  public
+    constructor Create(const Repo: IRepositorioAbastecimento);
+    function CalcularImposto(const ValorBruto: Double): Double;
+    procedure Registrar(const A: TAbastecimento);
+  end;
+
+implementation
+
+{ TServicoAbastecimento }
+
+constructor TServicoAbastecimento.Create(const Repo: IRepositorioAbastecimento);
+begin
+  FRepo := Repo;
+end;
+
+function TServicoAbastecimento.CalcularImposto(const ValorBruto: Double): Double;
+var taxa: Double;
+begin
+  taxa := FRepo.ObterTaxaImposto;
+  Result := RoundTo(ValorBruto * taxa, -2);
+end;
+
+procedure TServicoAbastecimento.Registrar(const A: TAbastecimento);
+var
+  TanqueId: Integer;
+begin
+  // Validação
+  TValidacoes.AssegurarPositivo(A.Litros, 'Litros');
+  if A.ValorBruto < 0 then
+    raise Exception.Create('Valor não pode ser negativo.');
+
+  // Calcula imposto
+  A.ValorImposto := CalcularImposto(A.ValorBruto);
+
+  // Grava o abastecimento
+  FRepo.Inserir(A);
+end;
+
+end.
