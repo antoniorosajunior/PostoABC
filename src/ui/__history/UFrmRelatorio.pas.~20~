@@ -1,0 +1,227 @@
+unit UFrmRelatorio;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, System.Math,
+  System.ImageList, Vcl.ImgList, Vcl.Buttons, Vcl.ComCtrls, Vcl.NumberBox,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
+  FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  URepositorio, UModels, UServicoAbastecimento, UValidacoes, FireDAC.Phys.Intf,
+  FireDAC.Stan.Async, Data.DB, ConexaoDM;
+
+
+type
+  TFrmRelatorio = class(TForm)
+    PanelHeader: TPanel;
+    PanelDados: TPanel;
+    PanelBotoes: TPanel;
+    BtnGerar: TButton;
+    BtnCancelar: TButton;
+    BtnSair: TButton;
+    Label1: TLabel;
+    ComboBomba: TComboBox;
+    Label2: TLabel;
+    edtData1: TDateTimePicker;
+    Label4: TLabel;
+    edtData2: TDateTimePicker;
+    DsRel: TDataSource;
+    FDQueryRel: TFDQuery;
+    Label6: TLabel;
+    ComboTanque: TComboBox;
+    procedure ComboBombaChange(Sender: TObject);
+    procedure BtnCancelarClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure BtnSairClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure BtnGerarClick(Sender: TObject);
+    procedure ComboTanqueChange(Sender: TObject);
+
+  private
+    FRepo: TRepositorio;
+    FServico: TServicoAbastecimento;
+    FSelectedTanqueId: Integer;
+    FSelectedBombaId: Integer;
+
+    procedure CarregarTanques;
+    procedure CarregarBombas;
+  public
+    constructor Create(AOwner: TComponent; ARepo: TRepositorio); reintroduce;
+  end;
+
+var
+  FrmRelatorio: TFrmRelatorio;
+
+implementation
+
+Uses UFrmRelatorioPreview;
+
+{$R *.dfm}
+
+
+procedure TFrmRelatorio.BtnCancelarClick(Sender: TObject);
+begin
+  edtData1.DateTime := now;
+  edtData2.DateTime := now;
+  edtData1.SetFocus;
+end;
+
+procedure TFrmRelatorio.BtnGerarClick(Sender: TObject);
+begin
+  try
+    FDQueryRel.Connection := FRepo.GetConnection;
+    FRepo.RelatorioAbastecimentos(FDQueryRel, edtData1.Date, edtData2.Date, FSelectedTanqueId, FSelectedBombaId);
+    if FDQueryRel.IsEmpty then
+    begin
+      ShowMessage('Nenhum registro encontrado para os filtros informados.');
+      Exit;
+    end;
+
+    with TFrmRelatorioPreview.Create(nil) do
+    begin
+      RLReport1.Preview;
+      Free;
+    end;
+
+  finally
+    FDQueryRel.Close;
+  end;
+end;
+
+procedure TFrmRelatorio.BtnSairClick(Sender: TObject);
+begin
+  close;
+end;
+
+procedure TFrmRelatorio.ComboBombaChange(Sender: TObject);
+var
+  idx: Integer;
+  bombaId: Integer;
+begin
+  idx := ComboBomba.ItemIndex;
+  if idx < 0 then
+    Exit;
+  bombaId := Integer(ComboBomba.Items.Objects[idx]);
+  FSelectedBombaId := bombaId;
+end;
+
+procedure TFrmRelatorio.ComboTanqueChange(Sender: TObject);
+var
+  idx: Integer;
+  tanqueId: Integer;
+begin
+  idx := ComboTanque.ItemIndex;
+  if idx < 0 then
+    Exit;
+  tanqueId := Integer(ComboTanque.Items.Objects[idx]);
+  FSelectedTanqueId := tanqueId;
+end;
+
+constructor TFrmRelatorio.Create(AOwner: TComponent; ARepo: TRepositorio);
+begin
+  inherited Create(AOwner);
+  FRepo := ARepo;
+  FServico := TServicoAbastecimento.Create(FRepo);
+end;
+
+procedure TFrmRelatorio.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    Key := 0;
+
+    if ActiveControl = ComboBomba then
+      BtnGerar.SetFocus
+    else
+      Perform(WM_NEXTDLGCTL, 0, 0);
+  end;
+end;
+
+procedure TFrmRelatorio.FormShow(Sender: TObject);
+begin
+  if Assigned(FRepo) then
+  begin
+    CarregarTanques;
+    CarregarBombas;
+  end;
+
+  BtnCancelarClick(Sender);
+end;
+
+procedure TFrmRelatorio.CarregarBombas;
+var
+  Q: TFDQuery;
+  i: Integer;
+  sDisplay: string;
+begin
+  ComboBomba.Items.BeginUpdate;
+  try
+    ComboBomba.Items.Clear;
+    ComboBomba.Items.AddObject('',TObject(0));
+    Q := TFDQuery.Create(nil);
+    try
+      Q.Connection := FRepo.GetConnection;
+      Q.SQL.Text := 'SELECT BOMBA_ID, CODIGO, DESCRICAO FROM BOMBA ORDER BY CODIGO';
+      Q.Open;
+      while not Q.Eof do
+      begin
+        sDisplay := Q.FieldByName('CODIGO').AsString;
+        if Trim(Q.FieldByName('DESCRICAO').AsString) <> '' then
+          sDisplay := sDisplay + ' - ' + Q.FieldByName('DESCRICAO').AsString;
+        ComboBomba.Items.AddObject(sDisplay, TObject(Q.FieldByName('BOMBA_ID').AsInteger));
+        Q.Next;
+      end;
+    finally
+      Q.Free;
+    end;
+    if ComboBomba.Items.Count > 0 then
+    begin
+      ComboBomba.ItemIndex := 0;
+      ComboBombaChange(nil);
+    end;
+  finally
+    ComboBomba.Items.EndUpdate;
+  end;
+end;
+
+procedure TFrmRelatorio.CarregarTanques;
+var
+  Q: TFDQuery;
+  i: Integer;
+  sDisplay: string;
+begin
+  ComboTanque.Items.BeginUpdate;
+  try
+    ComboTanque.Items.Clear;
+    ComboTanque.Items.AddObject('',TObject(0));
+    Q := TFDQuery.Create(nil);
+    try
+      Q.Connection := FRepo.GetConnection;
+      Q.SQL.Text := 'SELECT TANQUE_ID, NOME FROM TANQUE ORDER BY TANQUE_ID';
+      Q.Open;
+      while not Q.Eof do
+      begin
+        sDisplay := Q.FieldByName('TANQUE_ID').AsString;
+        if Trim(Q.FieldByName('NOME').AsString) <> '' then
+          sDisplay := sDisplay + ' - ' + Q.FieldByName('NOME').AsString;
+        ComboTanque.Items.AddObject(sDisplay, TObject(Q.FieldByName('TANQUE_ID').AsInteger));
+        Q.Next;
+      end;
+    finally
+      Q.Free;
+    end;
+    if ComboTanque.Items.Count > 0 then
+    begin
+      ComboTanque.ItemIndex := 0;
+      ComboTanqueChange(nil);
+    end;
+  finally
+    ComboTanque.Items.EndUpdate;
+  end;
+
+end;
+
+end.

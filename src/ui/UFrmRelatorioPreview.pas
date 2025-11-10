@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  RLHTMLFilter, RLPDFFilter, RLSaveDialog, RLFilters, RLRichFilter,
-  RLDraftFilter, jpeg, RLReport, RLXLSFilter;
+  RLReport, RLPreviewForm, RLXLSFilter, RLPDFFilter, RLFilters,
+  RLDraftFilter, RLRichFilter, Vcl.Dialogs, RLHTMLFilter;
 
 type
   TFrmRelatorioPreview = class(TForm)
@@ -49,6 +49,11 @@ type
     RLImage1: TRLImage;
     RLLabel3: TRLLabel;
     RLLabel6: TRLLabel;
+    RLRichFilter1: TRLRichFilter;
+    RLDraftFilter1: TRLDraftFilter;
+    RLPDFFilter1: TRLPDFFilter;
+    RLXLSFilter1: TRLXLSFilter;
+    RLHTMLFilter1: TRLHTMLFilter;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure RLLabel19BeforePrint(Sender: TObject; var AText: string;
       var PrintIt: Boolean);

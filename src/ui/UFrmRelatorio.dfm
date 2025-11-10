@@ -3,8 +3,8 @@ object FrmRelatorio: TFrmRelatorio
   Top = 0
   BorderIcons = [biSystemMenu]
   Caption = 'Relat'#243'rio'
-  ClientHeight = 344
-  ClientWidth = 606
+  ClientHeight = 288
+  ClientWidth = 453
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,7 +19,7 @@ object FrmRelatorio: TFrmRelatorio
   object PanelHeader: TPanel
     Left = 0
     Top = 0
-    Width = 606
+    Width = 453
     Height = 41
     Align = alTop
     Caption = 'Relat'#243'rio dos Lan'#231'amentos'
@@ -35,8 +35,8 @@ object FrmRelatorio: TFrmRelatorio
   object PanelDados: TPanel
     Left = 0
     Top = 41
-    Width = 606
-    Height = 262
+    Width = 453
+    Height = 206
     Align = alClient
     BevelOuter = bvNone
     Font.Charset = ANSI_CHARSET
@@ -151,22 +151,22 @@ object FrmRelatorio: TFrmRelatorio
   end
   object PanelBotoes: TPanel
     Left = 0
-    Top = 303
-    Width = 606
+    Top = 247
+    Width = 453
     Height = 41
     Align = alBottom
     BevelOuter = bvLowered
     TabOrder = 2
     ExplicitTop = 302
     ExplicitWidth = 602
-    object BtnGravar: TButton
+    object BtnGerar: TButton
       Left = 99
       Top = 6
       Width = 75
       Height = 25
       Caption = '&Gerar'
       TabOrder = 1
-      OnClick = BtnGravarClick
+      OnClick = BtnGerarClick
     end
     object BtnCancelar: TButton
       Left = 180

@@ -18,7 +18,7 @@ type
     PanelHeader: TPanel;
     PanelDados: TPanel;
     PanelBotoes: TPanel;
-    BtnGravar: TButton;
+    BtnGerar: TButton;
     BtnCancelar: TButton;
     BtnSair: TButton;
     Label1: TLabel;
@@ -36,7 +36,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure BtnSairClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure BtnGravarClick(Sender: TObject);
+    procedure BtnGerarClick(Sender: TObject);
     procedure ComboTanqueChange(Sender: TObject);
 
   private
@@ -65,10 +65,10 @@ procedure TFrmRelatorio.BtnCancelarClick(Sender: TObject);
 begin
   edtData1.DateTime := now;
   edtData2.DateTime := now;
-  ComboTanque.SetFocus;
+  edtData1.SetFocus;
 end;
 
-procedure TFrmRelatorio.BtnGravarClick(Sender: TObject);
+procedure TFrmRelatorio.BtnGerarClick(Sender: TObject);
 begin
   try
     FDQueryRel.Connection := FRepo.GetConnection;
@@ -132,7 +132,11 @@ begin
   if Key = VK_RETURN then
   begin
     Key := 0;
-    Perform(WM_NEXTDLGCTL, 0, 0);
+
+    if ActiveControl = ComboBomba then
+      BtnGerar.SetFocus
+    else
+      Perform(WM_NEXTDLGCTL, 0, 0);
   end;
 end;
 

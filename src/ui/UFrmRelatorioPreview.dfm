@@ -22,6 +22,7 @@ object FrmRelatorioPreview: TFrmRelatorioPreview
     Height = 1123
     AdjustableMargins = True
     DataSource = FrmRelatorio.DsRel
+    DefaultFilter = RLDraftFilter1
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -13
@@ -34,7 +35,7 @@ object FrmRelatorioPreview: TFrmRelatorioPreview
       Left = 38
       Top = 38
       Width = 718
-      Height = 71
+      Height = 56
       BandType = btColumnHeader
       Borders.Sides = sdCustom
       Borders.DrawLeft = False
@@ -56,7 +57,7 @@ object FrmRelatorioPreview: TFrmRelatorioPreview
       end
       object RLLabel18: TRLLabel
         Left = 3
-        Top = 51
+        Top = 38
         Width = 322
         Height = 16
         AutoSize = False
@@ -71,9 +72,9 @@ object FrmRelatorioPreview: TFrmRelatorioPreview
         BeforePrint = RLLabel19BeforePrint
       end
       object RLSystemInfo1: TRLSystemInfo
-        Left = 510
-        Top = 51
-        Width = 203
+        Left = 592
+        Top = 38
+        Width = 121
         Height = 16
         Alignment = taRightJustify
         AutoSize = False
@@ -84,9 +85,9 @@ object FrmRelatorioPreview: TFrmRelatorioPreview
         Transparent = False
       end
       object RLSystemInfo2: TRLSystemInfo
-        Left = 331
-        Top = 51
-        Width = 227
+        Left = 383
+        Top = 38
+        Width = 206
         Height = 16
         Alignment = taRightJustify
         AutoSize = False
@@ -107,7 +108,7 @@ object FrmRelatorioPreview: TFrmRelatorioPreview
     end
     object RLBand3: TRLBand
       Left = 38
-      Top = 109
+      Top = 94
       Width = 718
       Height = 19
       BandType = btColumnHeader
@@ -222,7 +223,7 @@ object FrmRelatorioPreview: TFrmRelatorioPreview
     end
     object RLGroup1: TRLGroup
       Left = 38
-      Top = 128
+      Top = 113
       Width = 718
       Height = 66
       DataFields = 'DIA'
@@ -533,7 +534,7 @@ object FrmRelatorioPreview: TFrmRelatorioPreview
     end
     object RLBand5: TRLBand
       Left = 38
-      Top = 194
+      Top = 179
       Width = 718
       Height = 28
       BandType = btSummary
@@ -642,5 +643,33 @@ object FrmRelatorioPreview: TFrmRelatorioPreview
         BeforePrint = RLLabel26BeforePrint
       end
     end
+  end
+  object RLRichFilter1: TRLRichFilter
+    DisplayName = 'Formato RichText'
+    Left = 832
+    Top = 64
+  end
+  object RLDraftFilter1: TRLDraftFilter
+    Left = 912
+    Top = 64
+  end
+  object RLPDFFilter1: TRLPDFFilter
+    DocumentInfo.Creator = 
+      'FortesReport Community Edition v4.0.1.2 \251 Copyright '#169' 1999-20' +
+      '21 Fortes Inform'#225'tica'
+    DisplayName = 'Documento PDF'
+    Left = 824
+    Top = 128
+  end
+  object RLXLSFilter1: TRLXLSFilter
+    DisplayName = 'Planilha Excel 97-2013'
+    Left = 912
+    Top = 128
+  end
+  object RLHTMLFilter1: TRLHTMLFilter
+    DocumentStyle = dsCSS2
+    DisplayName = 'P'#225'gina da Web'
+    Left = 824
+    Top = 192
   end
 end
