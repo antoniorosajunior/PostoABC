@@ -1,8 +1,0 @@
-O projeto foi desenvolvido em Delphi 11.2 (Alexandria), utilizando FireDAC, Firebird 5.0.3 e FortesReport.
-Inclui:
-- Script de criação do banco de dados (pasta /db);
-- Código-fonte completo, separado por camadas (domain, infra, ui);
-- Configuração de conexão via arquivo config.INI;
-- Relatórios implementados conforme requisitos.
-
-https://github.com/antoniorosajunior/PostoABC
