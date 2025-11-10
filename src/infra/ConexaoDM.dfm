@@ -10,7 +10,6 @@ object dmConexao: TdmConexao
       'Password=masterkey'
       'Database=D:\Sistemas\Fortes Tecnologia\PostoABC\db\POSTOABC.FDB'
       'Server=localhost')
-    Connected = True
     Left = 48
     Top = 32
   end

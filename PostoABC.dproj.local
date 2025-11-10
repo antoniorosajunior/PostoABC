@@ -1,31 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>2025/11/06 14:57:22.000.810,=D:\Sistemas\Fortes Tecnologia\PostoABC_Entrega_Final\postoabc_entrega_oop\src\domain\UValidacoes.pas</Transaction>
-    <Transaction>2025/11/06 14:57:22.000.580,=D:\Sistemas\Fortes Tecnologia\PostoABC_Entrega_Final\postoabc_entrega_oop\src\domain\URepositorio.pas</Transaction>
     <Transaction>2025/11/06 14:57:22.000.660,=D:\Sistemas\Fortes Tecnologia\PostoABC_Entrega_Final\postoabc_entrega_oop\src\domain\UServicoAbastecimento.pas</Transaction>
+    <Transaction>2025/11/06 14:57:22.000.580,=D:\Sistemas\Fortes Tecnologia\PostoABC_Entrega_Final\postoabc_entrega_oop\src\domain\URepositorio.pas</Transaction>
+    <Transaction>2025/11/06 14:57:22.000.810,=D:\Sistemas\Fortes Tecnologia\PostoABC_Entrega_Final\postoabc_entrega_oop\src\domain\UValidacoes.pas</Transaction>
     <Transaction>2025/11/06 14:57:22.000.500,=D:\Sistemas\Fortes Tecnologia\PostoABC_Entrega_Final\postoabc_entrega_oop\src\domain\UModels.pas</Transaction>
-    <Transaction>2025/11/06 15:48:52.000.770,D:\Sistemas\Fortes Tecnologia\PostoABC_Entrega_Final\postoabc_entrega_oop\PostoABC.dproj=D:\Sistemas\Fortes Tecnologia\PostoABC_Entrega_Final\postoabc_entrega_oop\Project.dproj</Transaction>
+    <Transaction>2025/11/06 15:48:52.000.770,D:\Sistemas\Fortes Tecnologia\PostoABC_Entrega_Final\postoabc_entrega_oop\Project.dproj=D:\Sistemas\Fortes Tecnologia\PostoABC_Entrega_Final\postoabc_entrega_oop\PostoABC.dproj</Transaction>
     <Transaction>2025/11/06 21:38:05.000.177,=D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.pas</Transaction>
-    <Transaction>2025/11/06 21:43:44.000.048,D:\Sistemas\Fortes Tecnologia\PostoABC\src\domain\IRepositorioRelatorios.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.pas</Transaction>
-    <Transaction>2025/11/06 21:47:38.000.255,D:\Sistemas\Fortes Tecnologia\PostoABC\src\domain\UIRepositorioRelatorios.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\src\domain\IRepositorioRelatorios.pas</Transaction>
-    <Transaction>2025/11/06 21:47:57.000.442,D:\Sistemas\Fortes Tecnologia\PostoABC\src\domain\URepositorioRelatorios.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\src\domain\UIRepositorioRelatorios.pas</Transaction>
+    <Transaction>2025/11/06 21:43:44.000.048,D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\src\domain\IRepositorioRelatorios.pas</Transaction>
+    <Transaction>2025/11/06 21:47:38.000.255,D:\Sistemas\Fortes Tecnologia\PostoABC\src\domain\IRepositorioRelatorios.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\src\domain\UIRepositorioRelatorios.pas</Transaction>
+    <Transaction>2025/11/06 21:47:57.000.442,D:\Sistemas\Fortes Tecnologia\PostoABC\src\domain\UIRepositorioRelatorios.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\src\domain\URepositorioRelatorios.pas</Transaction>
     <Transaction>2025/11/06 21:50:13.000.296,=D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.pas</Transaction>
     <Transaction>2025/11/06 21:54:40.000.323,D:\Sistemas\Fortes Tecnologia\PostoABC\src\domain\URepositorioRelatorios.pas=</Transaction>
-    <Transaction>2025/11/06 21:57:49.000.438,D:\Sistemas\Fortes Tecnologia\PostoABC\src\infra\URepositorioRelatorios.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.pas</Transaction>
+    <Transaction>2025/11/06 21:57:49.000.438,D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\src\infra\URepositorioRelatorios.pas</Transaction>
     <Transaction>2025/11/07 19:41:57.000.449,D:\Sistemas\Fortes Tecnologia\PostoABC\src\infra\URepositorioRelatorios.pas=</Transaction>
     <Transaction>2025/11/07 19:55:24.000.141,=D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.pas</Transaction>
-    <Transaction>2025/11/07 20:37:06.000.534,D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.dfm=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmLancamento.dfm</Transaction>
-    <Transaction>2025/11/07 20:37:06.000.534,D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmLancamento.pas</Transaction>
+    <Transaction>2025/11/07 20:37:06.000.534,D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmLancamento.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.pas</Transaction>
+    <Transaction>2025/11/07 20:37:06.000.534,D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmLancamento.dfm=D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.dfm</Transaction>
     <Transaction>2025/11/07 20:46:56.000.925,D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\FrmPrincipal.pas=</Transaction>
     <Transaction>2025/11/07 20:47:06.000.122,=D:\Sistemas\Fortes Tecnologia\PostoABC\Unit1.pas</Transaction>
     <Transaction>2025/11/07 20:48:27.000.291,=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\FrmPrincipal.pas</Transaction>
     <Transaction>2025/11/07 20:48:36.000.911,D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\FrmPrincipal.pas=</Transaction>
     <Transaction>2025/11/07 20:49:22.000.695,=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmPrincipal.pas</Transaction>
-    <Transaction>2025/11/09 14:21:02.931,D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmRelatorio.dfm=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmLancamento.dfm</Transaction>
-    <Transaction>2025/11/09 14:21:02.931,D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmRelatorio.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmLancamento.pas</Transaction>
-    <Transaction>2025/11/09 14:21:54.126,=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmLancamento.pas</Transaction>
-    <Transaction>2025/11/09 14:59:22.757,=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmRelatorioPreview.pas</Transaction>
+    <Transaction>2025/11/09 14:21:02.000.931,D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmLancamento.pas=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmRelatorio.pas</Transaction>
+    <Transaction>2025/11/09 14:21:02.000.931,D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmLancamento.dfm=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmRelatorio.dfm</Transaction>
+    <Transaction>2025/11/09 14:21:54.000.126,=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmLancamento.pas</Transaction>
+    <Transaction>2025/11/09 14:59:22.000.757,=D:\Sistemas\Fortes Tecnologia\PostoABC\src\ui\UFrmRelatorioPreview.pas</Transaction>
   </Transactions>
 	<ProjectSortOrder AutoSort="0" SortType="0">
     <File Path="src"/>
